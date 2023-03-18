@@ -1,0 +1,63 @@
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - dev
+env:
+  "NODE_ENV": "dev"
+  "accountId": "422853220697"
+  "DOMAIN": "devapp.bloominmind.com"
+  "BLOOMINMIND_API_SECRET": "bloominmind/api"
+  "UPLOAD_BUCKET_NAME": "bloom-upload-dev"
+  "ERA_BUCKET_NAME": "bloom-era-dev"
+  "API_KEY": "dev_SHL6qD9OEcJG2BehtGhPPmc6DX3qEvQv"
+  "REPORT_BUCKET_NAME": "bloom-reports-dev"
+  "REPORT2_BUCKET_NAME": "reports2-dev"
+  "WEBURL": "https://devapp.bloominmind.com"
+  "PORTAL_LINK": "https://devportal.bloominmind.com"
+  "APIURL": "https://devapi.bloominmind.com"
+  "CHANGE_HEALTH_API": "https://sandbox.developer.changehealthcare.com/apis"
+  "CHANGE_HEALTH_ELIGIBILITY_ENDPOINT": "networkSolutions/medicalEligibility"
+  "CHANGE_HEALTH_CLAIM_SUBMISSION_ENDPOINT": "medicalnetwork/professionalclaims/v3/submission"
+  "CHANGE_HEALTH_CLAIM_VALIDATION_ENDPOINT": "medicalnetwork/professionalclaims/v3/validation"
+  "CHANGE_HEALTH_AUTH_ENDPOINT": "auth/token"
+  "CHANGE_HEALTH_SECRET": "changeHealth/secret"
+  "CHANGE_HEALTH_CLIENT_ID": "${{secrets.CHANGE_HEALTH_CLIENT_ID_SANDBOX}}"
+  "CHANGE_HEALTH_CLIENT_SECRET": "${{secrets.CHANGE_HEALTH_CLIENT_SECRET_SANDBOX}}"
+  "FIREBASE_SECRET": "firebase/dev"
+  "OriginationNumber": "+18778616670"
+  "PinpointApplicationId": "8afbb7ab037948ebb3ea5d0de62194c6"
+  "COPAY_STATE_MACHINE": "test-state-machine"
+  "DBSECRET": "bloomdb-rds-secret"
+  "hostname": "${{secrets.DB_HOST_DEV}}"
+  "database": "bloom2"
+  "password": "${{secrets.DB_PASSWORD_DEV}}"
+  "user": "${{secrets.DB_USER_DEV}}"
+  "queueName": "batch-bloominmind-queue"
+  "INTUIT_CLIENT_ID": ${{ secrets.INTUIT_CLIENT_ID_SANDBOX }}
+  "INTUIT_CLIENT_SECRET": "${{ secrets.INTUIT_CLIENT_SECRET_SANDBOX }}"
+  "INTUIT_ENVIRONMENT": "sandbox"
+  "INTUIT_COMPANY_ID": "4625319964620760658"
+  "INTUIT_REDIRECT_URI": "http://localhost:8080/intuit/callback"
+  "INTUIT_BASE_URL": "sandbox-quickbooks.api.intuit.com"
+  "INTUIT_BASE_PAYMENT_URL": "sandbox.api.intuit.com"
+  "INTUIT_MINOR_VERSION": "14"
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.3.4
+        with:
+          ref: ${{ github.ref }}
+      - name: Npm install
+        uses: actions/setup-node@v2.1.2
+        with:
+          node-version: 12.x
+      - run: npm ci
+      - name: serverless deploy
+        uses: serverless/github-action@master
+        with:
+          args: deploy --stage dev
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
